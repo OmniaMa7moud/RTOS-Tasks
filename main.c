@@ -81,20 +81,63 @@
  * file.
  */
 static void prvSetupHardware( void );
-TaskHandle_t ToogleLedHandler = NULL;
+TaskHandle_t ToogleLed_1_Handler = NULL;
+TaskHandle_t ToogleLed_2_Handler = NULL;
+TaskHandle_t LedOffHandler = NULL;
+TaskHandle_t ButtonHandler = NULL;
+pinState_t buttonState;
 /*-----------------------------------------------------------*/
 
 
-void ToggleLed( void * pvParameters )
+void ToggleLed_1( void * pvParameters )
 {
     
 
     for( ;; )
     {
-        GPIO_write(PORT_0, PIN0, PIN_IS_HIGH);
-			 vTaskDelay(1000);
-			   GPIO_write(PORT_0, PIN0, PIN_IS_LOW);
-			vTaskDelay(1000);
+        GPIO_write(PORT_0, PIN1, PIN_IS_HIGH);
+			 vTaskDelay(100);
+			   GPIO_write(PORT_0, PIN1, PIN_IS_LOW);
+			vTaskDelay(100);
+    }
+}
+void ToggleLed_2( void * pvParameters )
+{
+    
+
+    for( ;; )
+    {
+        GPIO_write(PORT_0, PIN1, PIN_IS_HIGH);
+			 vTaskDelay(400);
+			   GPIO_write(PORT_0, PIN1, PIN_IS_LOW);
+			vTaskDelay(400);
+    }
+}
+void LedOff( void * pvParameters )
+{
+    
+
+    for( ;; )
+    {
+			   GPIO_write(PORT_0, PIN1, PIN_IS_LOW);
+    }
+}
+
+
+void Button( void * pvParameters )
+{
+    
+
+    for( ;; )
+    {
+			   buttonState = GPIO_read(PORT_0, PIN0);
+			if(buttonState == PIN_IS_HIGH)
+			{
+				
+			}
+			
+			
+			vTaskDelay(50);
     }
 }
 
@@ -110,7 +153,40 @@ int main( void )
 	
     /* Create Tasks here */
 
-
+xTaskCreate(
+                    ToggleLed_1,       /* Function that implements the task. */
+                    "Toglle Led 1",          /* Text name for the task. */
+                    100,      /* Stack size in words, not bytes. */
+                    ( void * ) 0,    /* Parameter passed into the task. */
+                    1,/* Priority at which the task is created. */
+                    &ToogleLed_1_Handler );      /* Used to pass out the created task's handle. */
+										
+xTaskCreate(
+                    ToggleLed_2,       /* Function that implements the task. */
+                    "Toglle Led 2",          /* Text name for the task. */
+                    100,      /* Stack size in words, not bytes. */
+                    ( void * ) 0,    /* Parameter passed into the task. */
+                    1,/* Priority at which the task is created. */
+                    &ToogleLed_2_Handler );      /* Used to pass out the created task's handle. */
+										
+										
+										
+xTaskCreate(
+                    LedOff,       /* Function that implements the task. */
+                    "Led Off",          /* Text name for the task. */
+                    100,      /* Stack size in words, not bytes. */
+                    ( void * ) 0,    /* Parameter passed into the task. */
+                    1,/* Priority at which the task is created. */
+                    &LedOffHandler );      /* Used to pass out the created task's handle. */
+										
+										
+xTaskCreate(
+                    Button,       /* Function that implements the task. */
+                    "Button",          /* Text name for the task. */
+                    100,      /* Stack size in words, not bytes. */
+                    ( void * ) 0,    /* Parameter passed into the task. */
+                    2,/* Priority at which the task is created. */
+                    &ButtonHandler );      /* Used to pass out the created task's handle. */
 	/* Now all the tasks have been started - start the scheduler.
 
 	NOTE : Tasks run in system mode and the scheduler runs in Supervisor mode.
